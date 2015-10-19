@@ -100,5 +100,53 @@ chmod a+x ltc
 ./ltc -v
 ```
 
+## Development
+
+To develop lattice release you will need to have the following tools installed.
+
+- vagrant
+- packer
+
+Optionally, install direnv.
+
+### Get the source
+
+```bash
+git clone --recursive https://github.com/sclevine/lattice-release.git
+cd lattice-release
+```
+
+### Build Lattice
+
+Running direnv allow will 
+```bash
+# install direnv if needed
+direnv allow
+bundle
+
+# you only need to do these steps once, unless DIEGO_VERSION changes or you want to make changes to diego/cf-release components
+cd vagrant
+# install packer and vagrant if needed
+./build -only=virtualbox-iso # NOTE: maybe also talk about build -only=amazon-ebs
+vagrant box add --force lattice-virtualbox-v0.box --name lattice/collocated
+
+# if you're only modifying lattice, this is the only step you need to re-run
+../release/build lattice.tgz
+```
+
+### Deploy Lattice
+
+```bash
+(cd vagrant && vagrant up) # NOTE: maybe also talk about vagrant up --provider=aws
+```
+
+### Install and test ltc
+
+```bash
+go install github.com/cloudfoundry-incubator/lattice/ltc
+ltc target local.lattice.cf
+ltc test -v
+```
+
 For more information visit [Lattice CLI](https://github.com/cloudfoundry-incubator/lattice/blob/master/ltc/README.md)
 
